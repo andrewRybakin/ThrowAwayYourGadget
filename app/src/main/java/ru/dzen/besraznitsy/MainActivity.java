@@ -54,10 +54,8 @@ public class MainActivity extends AppCompatActivity  {
         });
 
         MainActivityFragment mainActivityFragment=new MainActivityFragment();
-        Fragment splashFrag=new Fragment();
-        getLayoutInflater().inflate(R.layout.splash, (ViewGroup)splashFrag.getView());
-
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, splashFrag).commit();
+        SplashFragment splash=new SplashFragment();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, splash).commit();
         //getFragmentManager().beginTransaction().replace(R.id.fragment_container, mainActivityFragment).commit();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
@@ -103,5 +101,6 @@ public class MainActivity extends AppCompatActivity  {
     protected void onDestroy() {
         super.onDestroy();
         unbindService(aPConnection);
+        stopService(serviceIntent);
     }
 }

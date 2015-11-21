@@ -20,6 +20,7 @@ public class SupervisorService extends Service implements SensorEventListener {
 
     private static final String LOG_TAG = "SupervisorSensor";
     private boolean gameStarted;
+    private BroadcastReceiver mReceiver;
 
     private boolean proximityClose;
     private boolean screenDown;
@@ -39,7 +40,7 @@ public class SupervisorService extends Service implements SensorEventListener {
         sManager.registerListener(this, sManager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
-        BroadcastReceiver mReceiver = new ScreenReceiver();
+        mReceiver = new ScreenReceiver();
         registerReceiver(mReceiver, filter);
         gameStarted = false;
     }
@@ -51,7 +52,7 @@ public class SupervisorService extends Service implements SensorEventListener {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        stopGame();
+        if(isGameStarted())stopGame();
         return super.onUnbind(intent);
     }
 
@@ -137,7 +138,7 @@ public class SupervisorService extends Service implements SensorEventListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        unregisterReceiver(mReceiver);
     }
 }
 

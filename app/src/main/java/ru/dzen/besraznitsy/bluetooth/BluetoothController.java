@@ -1,9 +1,11 @@
-package ru.dzen.besraznitsy;
+package ru.dzen.besraznitsy.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+
+import ru.dzen.besraznitsy.MainActivity;
 
 public class BluetoothController {
 
