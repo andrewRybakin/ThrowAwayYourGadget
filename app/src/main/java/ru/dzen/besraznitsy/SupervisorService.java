@@ -9,9 +9,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.hardware.display.DisplayManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
+import android.view.Display;
 
 public class SupervisorService extends Service implements SensorEventListener {
 
@@ -46,10 +49,18 @@ public class SupervisorService extends Service implements SensorEventListener {
         return new SupervisorBinder(this);
     }
 
+    @Override
+    public boolean onUnbind(Intent intent) {
+        stopGame();
+        return super.onUnbind(intent);
+    }
+
     public void startGame() {
         gameStarted = true;
         lastState=isDeviceDeactivated();
-        SupervisorController.getInstance().onGameStart(System.currentTimeMillis(),getApplicationContext());
+        SupervisorController.getInstance().onGameStart(System.currentTimeMillis(), getApplicationContext());
+        PowerManager pm=(PowerManager)getSystemService(POWER_SERVICE);
+        screenOn=pm.isScreenOn();
     }
 
     public void stopGame(){

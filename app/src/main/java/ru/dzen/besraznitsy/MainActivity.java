@@ -1,5 +1,6 @@
 package ru.dzen.besraznitsy;
 
+import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -17,6 +18,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 public class MainActivity extends AppCompatActivity  {
 
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity  {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!mService.isGameStarted()) {
+                if (!mService.isGameStarted()) {
                     mService.startGame();
                     Snackbar.make(view, "StartGame", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
@@ -49,6 +52,14 @@ public class MainActivity extends AppCompatActivity  {
                 }
             }
         });
+
+        MainActivityFragment mainActivityFragment=new MainActivityFragment();
+        Fragment splashFrag=new Fragment();
+        getLayoutInflater().inflate(R.layout.splash, (ViewGroup)splashFrag.getView());
+
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, splashFrag).commit();
+        //getFragmentManager().beginTransaction().replace(R.id.fragment_container, mainActivityFragment).commit();
+
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -91,6 +102,6 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mService!=null)mService.unbindService(aPConnection);
+        unbindService(aPConnection);
     }
 }
