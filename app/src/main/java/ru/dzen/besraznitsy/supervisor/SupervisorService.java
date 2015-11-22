@@ -1,4 +1,4 @@
-package ru.dzen.besraznitsy;
+package ru.dzen.besraznitsy.supervisor;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -9,12 +9,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.hardware.display.DisplayManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
-import android.view.Display;
 
 public class SupervisorService extends Service implements SensorEventListener {
 
@@ -53,6 +51,8 @@ public class SupervisorService extends Service implements SensorEventListener {
     @Override
     public boolean onUnbind(Intent intent) {
         if(isGameStarted())stopGame();
+        if(intent.getType().equals(Intent.ACTION_APP_ERROR))
+            stopSelf();
         return super.onUnbind(intent);
     }
 

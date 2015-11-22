@@ -11,33 +11,24 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.UUID;
 
-public class Client {
+public class BluetoothClient {
+
+    private ArrayList<BluetoothDevice> servers;
+
     public void startClient(Context mContext) {
-        IntentFilter filter=new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        mContext.registerReceiver(mReceiver, filter);// Не забудьте снять регистрацию в onDestroy
+
     }
 
-    private final BroadcastReceiver mReceiver=new BroadcastReceiver(){
-        public void onReceive(Context context, Intent intent){
-            String action= intent.getAction();
-             if(BluetoothDevice.ACTION_FOUND.equals(action)){
-                BluetoothDevice device= intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+    public BluetoothDevice[] getServers() {
+        return (BluetoothDevice[])servers.toArray();
+    }
 
-
-                 new ConnectThread(device).start();////<--- подключение к устройству
-                 context.unregisterReceiver(mReceiver);
-                //Добавляем имя и адрес в array adapter, чтобы показвать в ListView
-                //mArrayAdapter.add(device.getName()+"\n"+ device.getAddress());
-            }
-        }
-    };
-
-    private class ConnectThread extends Thread{
+    private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
 
@@ -46,7 +37,9 @@ public class Client {
             mmDevice = device;
             try {
                 tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(Constants.MY_UUID));
-            } catch (IOException e) {;}
+            } catch (IOException e) {
+                ;
+            }
             mmSocket = tmp;
         }
 
@@ -58,6 +51,7 @@ public class Client {
                 try {
                     mmSocket.close();
                 } catch (IOException closeException) {
+
                 }
                 return;
             }
@@ -85,10 +79,10 @@ public class Client {
         PrintWriter out = new PrintWriter(mmSocket.getOutputStream());
         InputStreamReader is = new InputStreamReader(mmSocket.getInputStream());
         BufferedReader in = new BufferedReader(is);
-        while (true){
-            out.write(System.currentTimeMillis()+"");
-            if(in.ready()){
-                Log.d("Blue",in.readLine());
+        while (true) {
+            out.write(System.currentTimeMillis() + "");
+            if (in.ready()) {
+                Log.d("Blue", in.readLine());
             }
             try {
                 Thread.currentThread().sleep(500L);
