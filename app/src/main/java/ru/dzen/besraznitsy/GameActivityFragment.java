@@ -43,7 +43,7 @@ public class GameActivityFragment extends ListFragment {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         getActivity().registerReceiver(mReceiver, filter);
-        adapter = new ArrayAdapter<>(GameActivityFragment.this.getActivity(), R.layout.uni_list_item);
+        adapter = new ArrayAdapter<>(GameActivityFragment.this.getActivity(), R.layout.uni_list_item, R.id.text);
         adapter.setNotifyOnChange(true);
         setListAdapter(adapter);
     }
@@ -56,7 +56,7 @@ public class GameActivityFragment extends ListFragment {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.d("Блютуз", device.getName());
                 if(device.getName().contains(BluetoothController.PREFIX))
-                    adapter.add(device.getName());
+                    adapter.add(device.getName().substring(BluetoothController.PREFIX.length()));
             }
             if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Log.d("Блютуз", "EndSearch");

@@ -11,7 +11,7 @@ import ru.dzen.besraznitsy.GameActivityFragment;
 
 public class BluetoothController {
 
-    public static final String PREFIX = "ru.dzen/";
+    public static final String PREFIX = "ru.dzen-";
     private static Context mContext;
     private static BluetoothController ourInstance;
     private BluetoothAdapter mBAdapter;

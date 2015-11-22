@@ -10,6 +10,7 @@ public class SplashActivity extends Activity {
     private final String TAG = "SplashActivity";
     private final String THREAD_STARTED = "com.mercury.first.splash.SplashActivity.isThreadStarted";
     private boolean isThreadStarted;
+    private Thread splash;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,18 +21,18 @@ public class SplashActivity extends Activity {
             Log.d(TAG, "Выпихнули: " + isThreadStarted);
         }
         if (!isThreadStarted) {
-            Thread splash = new Thread(new Runnable() {
+            splash = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     isThreadStarted = true;
                     try {
                         Thread.sleep(3000);
+                        Intent i = new Intent(SplashActivity.this, StartActivity.class);
+                        startActivity(i);
+                        finish();
                     } catch (InterruptedException e) {
-                        Log.e(TAG, e.getMessage());
+                        finish();
                     }
-                    Intent i = new Intent(SplashActivity.this, StartActivity.class);
-                    startActivity(i);
-                    finish();
                 }
             });
             Log.d(TAG, "Запускаем");
@@ -46,5 +47,17 @@ public class SplashActivity extends Activity {
         Log.d(TAG, "Запихнули: " + isThreadStarted);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(isThreadStarted)
+            splash.interrupt();
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(isThreadStarted)
+            splash.interrupt();
+    }
 }
