@@ -29,9 +29,6 @@ public class SeekGamesFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         BluetoothController.getInstance(null);
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         getActivity().registerReceiver(mReceiver =new BluetoothController.EventsReceiver() {
             @Override
             public void onNewServerFound(String serverName) {
@@ -46,14 +43,14 @@ public class SeekGamesFragment extends ListFragment {
             @Override
             public void onAdapterOn() {
                 //Включение адаптера
-                BluetoothController.getInstance(getActivity()).startDiscovering();
+                BluetoothController.getInstance(null).startDiscovering();
             }
 
             @Override
             public void onAdapterOff() {
                 //Выключение адаптера
             }
-        }, filter);
+        }, BluetoothController.EVENTS_RECEIVER_FILTER);
         //Перегрузить собственный адаптер для отображения в листе вьюх со статусом сервера
         adapter = new ArrayAdapter<>(SeekGamesFragment.this.getActivity(), R.layout.uni_list_item, R.id.text);
         adapter.setNotifyOnChange(true);

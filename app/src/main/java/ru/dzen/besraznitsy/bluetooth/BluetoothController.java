@@ -6,29 +6,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
-import ru.dzen.besraznitsy.GameActivity;
 
 public class BluetoothController {
 
     public static final String REQUEST_BLUETOOTH="requestBluetooth";
-    public static final IntentFilter ENABLE_BT_FILTER=IntentFilter.create(REQUEST_BLUETOOTH, "text/*");
+    public static final IntentFilter EVENTS_RECEIVER_FILTER = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+
+    static {
+        EVENTS_RECEIVER_FILTER.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        EVENTS_RECEIVER_FILTER.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+    }
 
     private static Context mContext;
     private static BluetoothController ourInstance;
     private BluetoothAdapter mBAdapter;
-
-    public static final BroadcastReceiver ENABLE_BT_RECIEVER=new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(REQUEST_BLUETOOTH)) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                context.startActivity(enableBtIntent);
-            }
-        }
-    };
 
     public static abstract class EventsReceiver extends BroadcastReceiver {
         public abstract void onNewServerFound(String serverName);
@@ -41,6 +33,7 @@ public class BluetoothController {
             Log.d("Блютуз", "Чет пришло на ресивер");
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Log.d("Блютуз", "Я тебя нашел, " + device.getName() + "!!!");
                 if(device.getName().contains(BluetoothInterface.PREFIX))
                     onNewServerFound(device.getName().substring(BluetoothInterface.PREFIX.length()));
             }
@@ -55,7 +48,7 @@ public class BluetoothController {
                 }
             }
         }
-    };
+    }
 
     public static BluetoothController getInstance(Context c) {
         if (c != null)
@@ -70,11 +63,11 @@ public class BluetoothController {
         mBAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBAdapter != null) {
             if (!mBAdapter.isEnabled()) {
-                Intent i = new Intent(GameActivity.REQUEST_BLUETOOTH);
-                i.setType("text/*");
-                LocalBroadcastManager.getInstance(mContext).sendBroadcast(i);
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                mContext.startActivity(enableBtIntent);
                 Log.d("Блютуз", "Включаем!!!");
-            }
+            } else
+                startDiscovering();
         }
     }
 

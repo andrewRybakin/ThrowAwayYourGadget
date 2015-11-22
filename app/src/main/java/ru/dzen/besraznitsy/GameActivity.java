@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -45,8 +44,7 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(BluetoothController.ENABLE_BT_RECIEVER, BluetoothController.ENABLE_BT_FILTER);
-
+        //LocalBroadcastManager.getInstance(this).registerReceiver(BluetoothController.ENABLE_BT_RECIEVER, BluetoothController.ENABLE_BT_FILTER);
         BluetoothController.getInstance(this);
 
         SeekGamesFragment seekGamesFragment = new SeekGamesFragment();
@@ -82,6 +80,5 @@ public class GameActivity extends AppCompatActivity {
         super.onDestroy();
         unbindService(aPConnection);
         mService.stopSelf();
-        unregisterReceiver(BluetoothController.ENABLE_BT_RECIEVER);
     }
 }
