@@ -1,5 +1,6 @@
 package ru.dzen.besraznitsy;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -13,18 +14,21 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
+import ru.dzen.besraznitsy.bluetooth.BluetoothController;
 import ru.dzen.besraznitsy.supervisor.SupervisorService;
 
 public class GameActivity extends AppCompatActivity {
 
     public static final String EXTRA_NAME = "UserName";
+    public static final String REQUEST_BLUETOOTH = "BluetoothRequest";
+
     private ServiceConnection aPConnection;
     private SupervisorService mService;
     private Intent serviceIntent;
     private FloatingActionButton fab;
-    public static final String REQUEST_BLUETOOTH="BluetoothRequest";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +51,23 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        GameActivityFragment gameActivityFragment =new GameActivityFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, gameActivityFragment).commit();
-
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, 1);
+                Log.d("FUCKINGBLUETOOTH", "Why they can't do it for people???");
+                if (intent.getAction().equals(REQUEST_BLUETOOTH)) {
+                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, 1);
+                    Log.d("Блютуз", "bluetooth enable intent");
+                }
             }
         }, IntentFilter.create(REQUEST_BLUETOOTH, "text/*"));
+
+        BluetoothController.getInstance(this);
+
+        GameActivityFragment gameActivityFragment = new GameActivityFragment();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, gameActivityFragment).commit();
+
         aPConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
@@ -69,13 +80,26 @@ public class GameActivity extends AppCompatActivity {
             }
         };
         serviceIntent = new Intent(this, SupervisorService.class);
-        if(savedInstanceState==null)startService(serviceIntent);
+        if (savedInstanceState == null) startService(serviceIntent);
         bindService(serviceIntent, aPConnection, 0);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_CANCELED) {
+            startActivity(new Intent(this, StartActivity.class));
+            finish();
+        }else{
+            BluetoothController.getInstance(this).startDiscovering();
+
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unbindService(aPConnection);
+        mService.stopSelf();
     }
 }

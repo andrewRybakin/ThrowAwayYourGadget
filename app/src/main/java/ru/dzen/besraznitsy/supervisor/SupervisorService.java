@@ -50,8 +50,9 @@ public class SupervisorService extends Service implements SensorEventListener {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        if(isGameStarted())stopGame();
-        if(intent.getType().equals(Intent.ACTION_APP_ERROR))
+        if(isGameStarted())
+            stopGame();
+        else
             stopSelf();
         return super.onUnbind(intent);
     }
