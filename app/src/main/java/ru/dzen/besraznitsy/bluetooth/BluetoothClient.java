@@ -16,16 +16,10 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class BluetoothClient {
-
-    private ArrayList<BluetoothDevice> servers;
+public class BluetoothClient implements BluetoothInterface {
 
     public void startClient(Context mContext) {
 
-    }
-
-    public BluetoothDevice[] getServers() {
-        return (BluetoothDevice[])servers.toArray();
     }
 
     private class ConnectThread extends Thread {
@@ -36,7 +30,7 @@ public class BluetoothClient {
             BluetoothSocket tmp = null;
             mmDevice = device;
             try {
-                tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(Constants.MY_UUID));
+                tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(MY_UUID));
             } catch (IOException e) {
                 ;
             }

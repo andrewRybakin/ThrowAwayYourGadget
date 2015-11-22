@@ -14,21 +14,21 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Server {
+public class BluetoothServer implements BluetoothInterface {
     ArrayList<BluetoothSocket> socketPool = new ArrayList<>();
     Thread listener;
-    boolean start=false;
+    boolean start = false;
     String name;
     BluetoothAdapter mBAdapter;
     Context mContext;
     int maxClients;
 
-    public Server(BluetoothAdapter mBAdapter,Context mContext,int maxClients) {
-        this.mBAdapter=mBAdapter;
-        this.mContext=mContext;
-        this.maxClients=maxClients;
-        name=mBAdapter.getName();
-        start=true;
+    public BluetoothServer(BluetoothAdapter mBAdapter, Context mContext, int maxClients) {
+        this.mBAdapter = mBAdapter;
+        this.mContext = mContext;
+        this.maxClients = maxClients;
+        name = mBAdapter.getName();
+        start = true;
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0);
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(discoverableIntent);
@@ -43,11 +43,11 @@ public class Server {
 
     public void startServer() throws IOException {
 
-        mBAdapter.setName(Constants.prefix + name);
+        mBAdapter.setName(BluetoothInterface.PREFIX + name);
         final BluetoothServerSocket mmServerSocket =
-                mBAdapter.listenUsingRfcommWithServiceRecord(Constants.NAME, UUID.fromString(Constants.MY_UUID));
+                mBAdapter.listenUsingRfcommWithServiceRecord(NAME, UUID.fromString(MY_UUID));
 
-        listener =new Thread(new Runnable() {
+        listener = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (start) {
@@ -64,20 +64,20 @@ public class Server {
         ServerWorker();
     }
 
-    public void stopServer(){
-        start=false;
+    public void stopServer() {
+        start = false;
         mBAdapter.setName(name);
     }
 
     private void ServerWorker() throws IOException {
-        while(true) {
+        while (true) {
             for (BluetoothSocket s : socketPool) {
-                BufferedReader br=new BufferedReader(new InputStreamReader(s.getInputStream()));
-                String str="";
-                while((str=br.readLine())!=null){
+                BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                String str = "";
+                while ((str = br.readLine()) != null) {
                     for (BluetoothSocket s1 : socketPool) {
-                        if(s1!=s){
-                            PrintWriter pw =new PrintWriter(s1.getOutputStream());
+                        if (s1 != s) {
+                            PrintWriter pw = new PrintWriter(s1.getOutputStream());
                             pw.write(str);
                             pw.close();
                         }

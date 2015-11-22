@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import java.util.ArrayList;
 
 import ru.dzen.besraznitsy.bluetooth.BluetoothController;
+import ru.dzen.besraznitsy.bluetooth.BluetoothInterface;
 
 public class GameActivityFragment extends ListFragment {
 
@@ -55,8 +56,8 @@ public class GameActivityFragment extends ListFragment {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.d("Блютуз", device.getName());
-                if(device.getName().contains(BluetoothController.PREFIX))
-                    adapter.add(device.getName().substring(BluetoothController.PREFIX.length()));
+                if(device.getName().contains(BluetoothInterface.PREFIX))
+                    adapter.add(device.getName().substring(BluetoothInterface.PREFIX.length()));
             }
             if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Log.d("Блютуз", "EndSearch");
