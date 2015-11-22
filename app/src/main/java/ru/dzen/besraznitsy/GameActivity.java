@@ -1,12 +1,7 @@
 package ru.dzen.besraznitsy;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -14,7 +9,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 
 import ru.dzen.besraznitsy.bluetooth.BluetoothController;
@@ -51,22 +45,12 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Log.d("FUCKINGBLUETOOTH", "Why they can't do it for people???");
-                if (intent.getAction().equals(REQUEST_BLUETOOTH)) {
-                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(enableBtIntent, 1);
-                    Log.d("Блютуз", "bluetooth enable intent");
-                }
-            }
-        }, IntentFilter.create(REQUEST_BLUETOOTH, "text/*"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(BluetoothController.ENABLE_BT_RECIEVER, BluetoothController.ENABLE_BT_FILTER);
 
         BluetoothController.getInstance(this);
 
-        GameActivityFragment gameActivityFragment = new GameActivityFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, gameActivityFragment).commit();
+        SeekGamesFragment seekGamesFragment = new SeekGamesFragment();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, seekGamesFragment).commit();
 
         aPConnection = new ServiceConnection() {
             @Override
@@ -90,9 +74,6 @@ public class GameActivity extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_CANCELED) {
             startActivity(new Intent(this, StartActivity.class));
             finish();
-        }else{
-            BluetoothController.getInstance(this).startDiscovering();
-
         }
     }
 
@@ -101,5 +82,6 @@ public class GameActivity extends AppCompatActivity {
         super.onDestroy();
         unbindService(aPConnection);
         mService.stopSelf();
+        unregisterReceiver(BluetoothController.ENABLE_BT_RECIEVER);
     }
 }
