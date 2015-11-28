@@ -31,6 +31,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/name_text_edit"
+        android:textSize="@dimen/abc_text_size_title_material"
+        android:gravity="center"
         android:text="@string/write_name" />
 
 </RelativeLayout>

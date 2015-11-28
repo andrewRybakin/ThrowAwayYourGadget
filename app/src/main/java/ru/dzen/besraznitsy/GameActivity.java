@@ -1,5 +1,6 @@
 package ru.dzen.besraznitsy;
 
+import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -22,6 +23,8 @@ public class GameActivity extends AppCompatActivity {
     private SupervisorService mService;
     private Intent serviceIntent;
     private FloatingActionButton fab;
+    private View appBar;
+    private String SEEK_GAMES_TAG = "ru.dzen.seekGamesFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +50,10 @@ public class GameActivity extends AppCompatActivity {
         //LocalBroadcastManager.getInstance(this).registerReceiver(BluetoothController.ENABLE_BT_RECIEVER, BluetoothController.ENABLE_BT_FILTER);
         BluetoothController.getInstance(this);
 
-        SeekGamesFragment seekGamesFragment = new SeekGamesFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, seekGamesFragment).commit();
+        //SeekGamesFragment seekGamesFragment = new SeekGamesFragment();
+        //getFragmentManager().beginTransaction().replace(R.id.fragment, seekGamesFragment, SEEK_GAMES_TAG).commit();
+
+        appBar = findViewById(R.id.appbar);
 
         aPConnection = new ServiceConnection() {
             @Override
@@ -73,6 +78,10 @@ public class GameActivity extends AppCompatActivity {
             startActivity(new Intent(this, StartActivity.class));
             finish();
         }
+    }
+
+    public int getAppBarSize() {
+        return appBar.getHeight();
     }
 
     @Override

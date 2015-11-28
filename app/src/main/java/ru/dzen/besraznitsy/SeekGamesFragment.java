@@ -1,14 +1,15 @@
 package ru.dzen.besraznitsy;
 
 import android.app.ListFragment;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import ru.dzen.besraznitsy.bluetooth.BluetoothController;
 
@@ -21,6 +22,8 @@ public class SeekGamesFragment extends ListFragment {
 
     private ArrayAdapter adapter;
     private BluetoothController.EventsReceiver mReceiver;
+    private TextView headerView;
+    private LinearLayout footerView;
 
     public SeekGamesFragment() {
     }
@@ -28,8 +31,8 @@ public class SeekGamesFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        BluetoothController.getInstance(null);
-        getActivity().registerReceiver(mReceiver =new BluetoothController.EventsReceiver() {
+        BluetoothController.getInstance(getActivity());
+        getActivity().registerReceiver(mReceiver = new BluetoothController.EventsReceiver() {
             @Override
             public void onNewServerFound(String serverName) {
                 adapter.add(serverName);
@@ -38,6 +41,8 @@ public class SeekGamesFragment extends ListFragment {
             @Override
             public void onDiscoveryFinish() {
                 //Показать что завершено сканирование и предложить новое
+                Log.d("Блютуз", "StopSellingShitFromBoxes");
+                headerView.setText("Founded servers");
             }
 
             @Override
@@ -52,7 +57,7 @@ public class SeekGamesFragment extends ListFragment {
             }
         }, BluetoothController.EVENTS_RECEIVER_FILTER);
         //Перегрузить собственный адаптер для отображения в листе вьюх со статусом сервера
-        adapter = new ArrayAdapter<>(SeekGamesFragment.this.getActivity(), R.layout.uni_list_item, R.id.text);
+        adapter = new ArrayAdapter<>(SeekGamesFragment.this.getActivity(), R.layout.seek_games_fragment_listitem, R.id.text);
         adapter.setNotifyOnChange(true);
         setListAdapter(adapter);
     }
@@ -60,8 +65,22 @@ public class SeekGamesFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.game_fragment, container, false);
+        View v = inflater.inflate(R.layout.seek_games_fragment, container, false);
+        headerView = (TextView) inflater.inflate(R.layout.seek_games_fragment_list_headfoot, null);
+        //footerView = (LinearLayout)inflater.inflate(R.layout.seek_games_fragment_list_headfoot, null);
         return v;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        headerView.setText(getString(R.string.searching_header));
+        getListView().addHeaderView(headerView, null, false);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
     }
 
     /**

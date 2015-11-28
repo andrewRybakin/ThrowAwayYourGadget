@@ -30,7 +30,7 @@ public class BluetoothController {
 
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Log.d("Блютуз", "Чет пришло на ресивер");
+            Log.d("Блютуз", "Чет пришло на ресивер: " + intent.getAction());
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.d("Блютуз", "Я тебя нашел, " + device.getName() + "!!!");
@@ -51,7 +51,7 @@ public class BluetoothController {
     }
 
     public static BluetoothController getInstance(Context c) {
-        if (c != null)
+        if (mContext == null)
             mContext = c;
         if (ourInstance == null)
             return ourInstance = new BluetoothController();
